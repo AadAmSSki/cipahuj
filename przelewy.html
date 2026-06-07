@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Przelewy</title>
+    <style>
+        body { background: #121212; color: #ffffff; font-family: -apple-system, sans-serif; padding: 20px; margin: 0; }
+        .container { max-width: 400px; margin: auto; }
+        h2 { color: #ff6200; }
+        label { display: block; margin-top: 20px; color: #aaa; font-size: 0.9em; }
+        input { 
+            width: 100%; padding: 15px; margin-top: 8px; background: #1e1e1e; 
+            border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; 
+            font-size: 1.1em;
+        }
+        button { 
+            width: 100%; padding: 15px; margin-top: 30px; background: #ff6200; 
+            border: none; border-radius: 12px; color: white; font-weight: bold; 
+            font-size: 1em; cursor: pointer;
+        }
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-nav">
+            <h2>Nowy przelew</h2>
+            <div onclick="window.location.href='index.html'" style="cursor:pointer; font-size: 24px; color: #aaa;">×</div>
+        </div>
+        
+        <label>Numer rachunku odbiorcy</label>
+        <input type="text" id="accNumber" placeholder="Wpisz 26 cyfr" maxlength="26">
+        
+        <label>Kwota (PLN)</label>
+        <input type="number" id="amt" placeholder="0,00">
+        
+        <button onclick="zrobPrzelew()">Wyślij środki</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSiHPYoQ_buaaZOm0bb308nSQAo21fQh8",
+            authDomain: "bank-ebf5e.firebaseapp.com",
+            databaseURL: "https://bank-ebf5e-default-rtdb.firebaseio.com",
+            projectId: "bank-ebf5e",
+            storageBucket: "bank-ebf5e.firebasestorage.app",
+            messagingSenderId: "383712413192",
+            appId: "1:383712413192:web:f81c9bc82431cbadd573bd",
+            measurementId: "G-NE1B0WEM23"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // UWAGA: Upewnij się, że ten numer jest w bazie!
+        const MOJE_KONTO = "22222222222222222222222222";
+
+        window.zrobPrzelew = async function() {
+            const acc = document.getElementById('accNumber').value;
+            const kwota = parseFloat(document.getElementById('amt').value);
+
+            if (acc.length !== 26) {
+                alert("Numer konta musi mieć 26 cyfr!");
+                return;
+            }
+            if (isNaN(kwota) || kwota <= 0) {
+                alert("Wpisz poprawną kwotę!");
+                return;
+            }
+
+            try {
+                const nadawcaRef = ref(db, 'konta/' + MOJE_KONTO);
+                const odbiorcaRef = ref(db, 'konta/' + acc);
+
+                const nadawcaSnap = await get(nadawcaRef);
+                const odbiorcaSnap = await get(odbiorcaRef);
+
+                if (!odbiorcaSnap.exists()) {
+                    alert("Błąd: Nie znaleziono konta odbiorcy w bazie.");
+                    return;
+                }
+
+                const saldoNadawcy = nadawcaSnap.val().saldo;
+                const saldoOdbiorcy = odbiorcaSnap.val().saldo;
+
+                if (kwota > saldoNadawcy) {
+                    alert("Błąd: Brak środków!");
+                    return;
+                }
+
+                let updates = {};
+                updates['konta/' + MOJE_KONTO + '/saldo'] = saldoNadawcy - kwota;
+                updates['konta/' + acc + '/saldo'] = saldoOdbiorcy + kwota;
+
+                await update(ref(db), updates);
+                
+                alert("Przelew udany!");
+                window.location.href = 'index.html';
+            } catch (error) {<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Przelewy</title>
+    <style>
+        body { background: #121212; color: #ffffff; font-family: -apple-system, sans-serif; padding: 20px; margin: 0; }
+        .container { max-width: 400px; margin: auto; }
+        h2 { color: #ff6200; }
+        label { display: block; margin-top: 20px; color: #aaa; font-size: 0.9em; }
+        input { width: 100%; padding: 15px; margin-top: 8px; background: #1e1e1e; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 1.1em; }
+        button { width: 100%; padding: 15px; margin-top: 30px; background: #ff6200; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 1em; cursor: pointer; }
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-nav">
+            <h2>Nowy przelew</h2>
+            <div onclick="window.location.href='index.html'" style="cursor:pointer; font-size: 24px; color: #aaa;">×</div>
+        </div>
+        
+        <label>Numer rachunku odbiorcy</label>
+        <input type="text" id="accNumber" placeholder="Wpisz ID konta" maxlength="26">
+        
+        <label>Kwota (PLN)</label>
+        <input type="number" id="amt" placeholder="0,00">
+        
+        <button onclick="zrobPrzelew()">Wyślij środki</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSiHPYoQ_buaaZOm0bb308nSQAo21fQh8",
+            authDomain: "bank-ebf5e.firebaseapp.com",
+            projectId: "bank-ebf5e",
+            storageBucket: "bank-ebf5e.firebasestorage.app",
+            messagingSenderId: "383712413192",
+            appId: "1:383712413192:web:f81c9bc82431cbadd573bd"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ID Twojego konta w kolekcji "konta"
+        const MOJE_KONTO = "22222222222222222222222222";
+
+        window.zrobPrzelew = async function() {
+            const acc = document.getElementById('accNumber').value;
+            const kwota = parseFloat(document.getElementById('amt').value);
+
+            if (!acc || isNaN(kwota) || kwota <= 0) {
+                alert("Wpisz poprawne dane!");
+                return;
+            }
+
+            const nadawcaRef = doc(db, "konta", MOJE_KONTO);
+            const odbiorcaRef = doc(db, "konta", acc);
+
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const nadawcaDoc = await transaction.get(nadawcaRef);
+                    const odbiorcaDoc = await transaction.get(odbiorcaRef);
+
+                    if (!nadawcaDoc.exists()) throw "Nie znaleziono Twojego konta.";
+                    if (!odbiorcaDoc.exists()) throw "Nie znaleziono konta odbiorcy.";
+
+                    const saldoNadawcy = nadawcaDoc.data().saldo;
+                    const saldoOdbiorcy = odbiorcaDoc.data().saldo;
+
+                    if (saldoNadawcy < kwota) throw "Brak wystarczających środków!";
+
+                    transaction.update(nadawcaRef, { saldo: saldoNadawcy - kwota });
+                    transaction.update(odbiorcaRef, { saldo: saldoOdbiorcy + kwota });
+                });
+                
+                alert("Przelew udany!");
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert("Błąd: " + error);
+            }
+        }
+    </script>
+</body>
+</html>
+                alert("Błąd połączenia: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

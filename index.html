@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Moje CasinoBank</title>
+    <style>
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #ff6200; --text: #ffffff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+        header { padding: 30px 20px; font-size: 1.6em; font-weight: bold; color: var(--accent); }
+        .balance-box { background: var(--card); margin: 0 20px; padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        .balance-value { font-size: 2.2em; font-weight: bold; margin-top: 10px; }
+        .shortcut-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 30px 20px; }
+        .shortcut-item { text-align: center; text-decoration: none; color: white; display: flex; flex-direction: column; align-items: center; }
+        .shortcut-icon { width: 60px; height: 60px; background: var(--card); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #333; font-size: 28px; }
+        .shortcut-label { font-size: 10px; margin-top: 8px; color: #aaa; }
+        .navbar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-item { text-align: center; font-size: 11px; color: #888; text-decoration: none; }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSiHPYoQ_buaaZOm0bb308nSQAo21fQh8",
+            authDomain: "bank-ebf5e.firebaseapp.com",
+            projectId: "bank-ebf5e",
+            storageBucket: "bank-ebf5e.firebasestorage.app",
+            messagingSenderId: "383712413192",
+            appId: "1:383712413192:web:f81c9bc82431cbadd573bd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Ustawiamy odwołanie do dokumentu "6767" w kolekcji "konta"
+        const docRef = doc(db, "konta", "22222222222222222222222222");
+
+        onSnapshot(docRef, (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                // Pobieramy wartość pola "saldo"
+                const saldo = data.saldo;
+                // Jeśli saldo istnieje, wyświetlamy je, w przeciwnym razie 0.00
+                document.getElementById('balanceDisplay').innerText = (saldo !== undefined ? saldo.toFixed(2) : "0.00") + " PLN";
+            } else {
+                document.getElementById('balanceDisplay').innerText = "0.00 PLN";
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>Moje CasinoBank</header>
+    <div class="balance-box">
+        <div>Dzień dobry, Jan 👋</div>
+        <div class="balance-value" id="balanceDisplay">Ładowanie...</div>
+    </div>
+    
+    <div class="shortcut-grid">
+        <a href="blik.html" class="shortcut-item"><div class="shortcut-icon">🔑</div><div class="shortcut-label">KOD BLIK</div></a>
+        <a href="przelewy.html" class="shortcut-item"><div class="shortcut-icon">💸</div><div class="shortcut-label">PRZELEW</div></a>
+        <a href="uslugi.html" class="shortcut-item"><div class="shortcut-icon">⚙️</div><div class="shortcut-label">USŁUGI</div></a>
+        <a href="analizy.html" class="shortcut-item"><div class="shortcut-icon">📊</div><div class="shortcut-label">ANALIZA</div></a>
+    </div>
+    
+    <nav class="navbar">
+        <a href="index.html" class="nav-item" style="color:var(--accent);">🏠<br>Start</a>
+        <a href="przelewy.html" class="nav-item">💳<br>Przelewy</a>
+        <a href="uslugi.html" class="nav-item">🎛️<br>Usługi</a>
+    </nav>
+</body>
+</html>

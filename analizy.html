@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Analiza wydatków</title>
+    <style>
+        body { background: #121212; color: #ffffff; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-btn { font-size: 24px; cursor: pointer; color: #aaa; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
+        .donut { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(#7e82c5 70%, #d8766a 70% 95%, #de5e9a 95%); margin: 20px auto; display: flex; align-items: center; justify-content: center; position: relative; }
+        .donut::after { content: ""; width: 100px; height: 100px; background: #1e1e1e; border-radius: 50%; }
+        .footer-link { color: #d8766a; text-decoration: none; display: block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h2>Wydatki w tym miesiącu</h2>
+            <div class="close-btn" onclick="window.location.href='index.html'">×</div>
+        </div>
+        <div class="card">
+            <div class="donut"><span id="totalDisplay" style="position:absolute; font-weight:bold;">0.00 PLN</span></div>
+            <p>Pozostałe: <span id="pozostaleDisplay">0.00</span> PLN</p>
+            <a href="analiza_szczegoly.html" class="footer-link">Pokaż szczegóły</a>
+        </div>
+    </div>
+    <script>
+        const lastMonth = localStorage.getItem('lastMonth');
+        const currentMonth = new Date().getMonth();
+        if (lastMonth === null || parseInt(lastMonth) !== currentMonth) {
+            localStorage.setItem('spentTotal', "0.00");
+            localStorage.setItem('spentPozostale', "0.00");
+            localStorage.setItem('lastMonth', currentMonth);
+        }
+        document.getElementById('totalDisplay').innerText = (localStorage.getItem('spentTotal') || "0.00") + " PLN";
+        document.getElementById('pozostaleDisplay').innerText = (localStorage.getItem('spentPozostale') || "0.00");
+    </script>
+</body>
+</html>

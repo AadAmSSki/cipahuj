@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szczegółowa Analiza</title>
+    <style>
+        body { background: #121212; color: #ffffff; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .header-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 1.2em; }
+        .dropdown { background: #1e1e1e; border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .chart-area { margin-top: 30px; }
+        .bar-container { display: flex; align-items: flex-end; height: 200px; gap: 15px; border-bottom: 1px solid #555; padding-bottom: 10px; }
+        .bar { width: 30px; border-radius: 4px 4px 0 0; transition: height 0.5s ease; }
+        .footer-labels { display: flex; justify-content: space-around; margin-top: 10px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-nav">
+            <span onclick="history.back()" style="cursor:pointer;">← Analiza wydatków</span>
+            <span onclick="window.location.href='index.html'" style="cursor:pointer; font-size: 24px; color: #aaa;">×</span>
+        </div>
+        
+        <div class="dropdown" id="accDisplay">_AadAmSSki69 12,27 PLN <span>▼</span></div>
+        <div class="dropdown">Twój miesiąc (06.2026 - dzisiaj) <span>▼</span></div>
+        
+        <div style="margin: 20px 0;">Suma wydatków: <b id="totalDisplay">0,00 PLN</b></div>
+
+        <div class="chart-area">
+            <div class="bar-container">
+                <div class="bar" style="height: 150px; background: #7e82c5;"></div>
+                <div class="bar" style="height: 50px; background: #d8766a;"></div>
+                <div class="bar" id="barPozostale" style="height: 10px; background: #de5e9a;"></div>
+            </div>
+            <div class="footer-labels">
+                <span>🏠</span><span>🌴</span><span>🔣</span>
+            </div>
+            <div style="text-align: right; margin-top: 5px;">Kategoria</div>
+        </div>
+    </div>
+
+    <script>
+        // LOGIKA RESETU MIESIĄCA
+        const lastMonth = localStorage.getItem('lastMonth');
+        const currentMonth = new Date().getMonth();
+        if (lastMonth === null || parseInt(lastMonth) !== currentMonth) {
+            localStorage.setItem('spentTotal', "0.00");
+            localStorage.setItem('spentPozostale', "0.00");
+            localStorage.setItem('lastMonth', currentMonth);
+        }
+
+        // Pobieramy dane z pamięci
+        const total = parseFloat(localStorage.getItem('spentTotal') || 0);
+        const bal = parseFloat(localStorage.getItem('userBalance') || 12.27);
+        const pozostale = parseFloat(localStorage.getItem('spentPozostale') || 0);
+
+        // Aktualizacja tekstów
+        document.getElementById('totalDisplay').innerText = total.toFixed(2) + " PLN";
+        document.getElementById('accDisplay').innerHTML = "_AadAmSSki69 " + bal.toFixed(2) + " PLN <span>▼</span>";
+
+        // Aktualizacja wysokości słupka "Pozostałe"
+        let barHeight = 10 + (pozostale * 2); 
+        document.getElementById('barPozostale').style.height = barHeight + "px";
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Kod BLIK</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; padding: 20px; }
+        .blik-card { background: #1e1e1e; padding: 40px; border-radius: 20px; text-align: center; margin-top: 50px; }
+        .code { font-size: 50px; color: #ff6200; font-weight: bold; letter-spacing: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Kod blik</h2>
+    <div class="blik-card">
+        <div class="code">367 124</div>
+        <div style="background:#333; height:5px; margin:20px 0; border-radius:3px;"></div>
+        <p>118 s</p>
+    </div>
+    <a href="index.html" style="display:block; margin-top:20px; color:#888; text-align:center;">Wróć</a>
+</body>
+</html>

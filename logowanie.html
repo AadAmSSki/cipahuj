@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Logowanie</title>
+    <style>
+        body { background: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+        .card { background: #1e1e1e; padding: 30px; border-radius: 16px; width: 300px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #ff6200; border: none; color: white; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Logowanie</h2>
+        <input type="text" id="user" placeholder="Login">
+        <input type="password" id="pass" placeholder="Hasło">
+        <button onclick="login()">Zaloguj</button>
+    </div>
+    <script>
+        function login() { window.location.href = 'index.html'; }
+    </script>
+</body>
+</html>
