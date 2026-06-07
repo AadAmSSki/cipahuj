@@ -15,39 +15,8 @@
         .shortcut-label { font-size: 10px; margin-top: 8px; color: #aaa; }
         .navbar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
         .nav-item { text-align: center; font-size: 11px; color: #888; text-decoration: none; }
+        .history-box { margin: 20px; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDSiHPYoQ_buaaZOm0bb308nSQAo21fQh8",
-            authDomain: "bank-ebf5e.firebaseapp.com",
-            projectId: "bank-ebf5e",
-            storageBucket: "bank-ebf5e.firebasestorage.app",
-            messagingSenderId: "383712413192",
-            appId: "1:383712413192:web:f81c9bc82431cbadd573bd"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Ustawiamy odwołanie do dokumentu "6767" w kolekcji "konta"
-        const docRef = doc(db, "konta", "22222222222222222222222222");
-
-        onSnapshot(docRef, (doc) => {
-            if (doc.exists()) {
-                const data = doc.data();
-                // Pobieramy wartość pola "saldo"
-                const saldo = data.saldo;
-                // Jeśli saldo istnieje, wyświetlamy je, w przeciwnym razie 0.00
-                document.getElementById('balanceDisplay').innerText = (saldo !== undefined ? saldo.toFixed(2) : "0.00") + " PLN";
-            } else {
-                document.getElementById('balanceDisplay').innerText = "0.00 PLN";
-            }
-        });
-    </script>
 </head>
 <body>
     <header>Moje CasinoBank</header>
@@ -62,11 +31,72 @@
         <a href="uslugi.html" class="shortcut-item"><div class="shortcut-icon">⚙️</div><div class="shortcut-label">USŁUGI</div></a>
         <a href="analizy.html" class="shortcut-item"><div class="shortcut-icon">📊</div><div class="shortcut-label">ANALIZA</div></a>
     </div>
+
+    <div class="history-box">
+        <h3 style="margin-top: 0; color: #ff6200;">Ostatnie transakcje</h3>
+        <div id="historyList" style="color: #ccc;">Ładowanie historii...</div>
+    </div>
     
     <nav class="navbar">
         <a href="index.html" class="nav-item" style="color:var(--accent);">🏠<br>Start</a>
         <a href="przelewy.html" class="nav-item">💳<br>Przelewy</a>
         <a href="uslugi.html" class="nav-item">🎛️<br>Usługi</a>
     </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSiHPYoQ_buaaZOm0bb308nSQAo21fQh8",
+            authDomain: "bank-ebf5e.firebaseapp.com",
+            projectId: "bank-ebf5e",
+            storageBucket: "bank-ebf5e.firebasestorage.app",
+            messagingSenderId: "383712413192",
+            appId: "1:383712413192:web:f81c9bc82431cbadd573bd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ID Twojego konta
+        const MOJE_KONTO = "22222222222222222222222222";
+        const docRef = doc(db, "konta", MOJE_KONTO);
+
+        // Pobieranie salda
+        onSnapshot(docRef, (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                const saldo = data.saldo; 
+                document.getElementById('balanceDisplay').innerText = (saldo != null ? saldo.toFixed(2) : "0.00") + " PLN";
+            }
+        });
+
+        // Pobieranie historii
+        async function loadHistory() {
+            try {
+                const q = query(collection(db, "historia"), orderBy("data", "desc"), limit(5));
+                const querySnapshot = await getDocs(q);
+                const list = document.getElementById('historyList');
+                list.innerHTML = ""; 
+                
+                querySnapshot.forEach((doc) => {
+                    const t = doc.data();
+                    const isMe = t.od === MOJE_KONTO; 
+                    list.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding: 10px 0;">
+                            <div style="font-size: 14px;">${isMe ? "Do: " + t.do.slice(-4) : "Od: " + t.od.slice(-4)}</div>
+                            <div style="color: ${isMe ? '#ff4444' : '#00ff00'}; font-weight:bold;">
+                                ${isMe ? '-' : '+'}${t.kwota.toFixed(2)} PLN
+                            </div>
+                        </div>`;
+                });
+            } catch (e) {
+                console.error("Błąd ładowania historii:", e);
+                document.getElementById('historyList').innerText = "Błąd ładowania historii.";
+            }
+        }
+        loadHistory();
+    </script>
 </body>
 </html>
